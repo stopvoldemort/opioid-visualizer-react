@@ -9,7 +9,7 @@ export const XAxisLabels = ( { tickSize, fontSize, years, graphHeight, graphWidt
     const labels = [2000, 2004, 2008, 2012, 2016]
     const intervals = [1, 5, 9, 13, 17]
     return intervals.map((interval, i) => {
-      const x = yLabelWidth + (xIncrement * interval)
+      const x = (xIncrement * interval)
       return (
         <g key={cuid()}>
           <line className="graph-axis"
@@ -17,7 +17,7 @@ export const XAxisLabels = ( { tickSize, fontSize, years, graphHeight, graphWidt
             x2={x} y2={graphHeight + tickSize}
             stroke="#bdc3c7" />
           <text x={x} y={graphHeight + tickSize + fontSize + 5}
-            className="x-axis-label">{labels[i]}</text>
+            className="x-axis-label" fontSize={fontSize}>{labels[i]}</text>
         </g>
       )
     })

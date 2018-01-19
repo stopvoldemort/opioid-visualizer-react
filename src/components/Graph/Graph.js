@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Axes } from './Axes.js'
 import { XAxisLabels } from './XAxisLabels.js'
 import { YAxisLabels } from './YAxisLabels.js'
+import { Legend } from './Legend.js'
 import { DATA } from '../../assets/data.js'
 import cuid from 'cuid'
 import '../../style/Graph.css'
@@ -12,22 +13,34 @@ export default class Graph extends Component {
 
   state = {
     colors: ['blue', 'red', 'green', 'blue', 'brown', 'black'],
-    graphHeight: 300,
-    graphWidth: 700,
+    graphHeight: 200,
+    graphWidth: 400,
     yLabelWidth: 50,
     xLabelHeight: 25,
     tickSize: 10,
-    fontSize: 10,
+    xAxisFontSize: 10,
+    yAxisFontSize: 10,
     minX: 1999,
     maxX: 2016,
     minY: 0,
-    maxY: 1
+    maxY: 1,
+    legendRows: 1,
+    legendRowHeight: 20
   }
 
   componentDidMount = () => {
     const maxY = this.getMaxY()
+    const rows = this.calcLegendRows()
 
-    this.setState({ maxY: maxY })
+    this.setState({
+      maxY: maxY,
+      legendRows: rows
+    })
+  }
+
+  calcLegendRows = (rows) => {
+    const states = Object.keys(DATA)
+    return Math.floor(states.length / 4) + 1
   }
 
   getMaxY() {
@@ -65,10 +78,9 @@ export default class Graph extends Component {
   }
 
   makePath(data, color) {
-    const { yLabelWidth } = this.state
-    let pathD = "M " + (this.getSvgX(data[0].x) + yLabelWidth) + " " + this.getSvgY(data[0].y) + " "
+    let pathD = "M " + (this.getSvgX(data[0].x)) + " " + this.getSvgY(data[0].y) + " "
     pathD += data.map((point, i) => {
-      return "L " + (this.getSvgX(point.x) + yLabelWidth) + " " + this.getSvgY(point.y) + " "
+      return "L " + (this.getSvgX(point.x)) + " " + this.getSvgY(point.y) + " "
     })
     return (
       <path key={cuid()} className="graph_path" d={pathD} style={{stroke: color}} />
@@ -78,23 +90,28 @@ export default class Graph extends Component {
 
   render() {
     const { graphHeight, graphWidth, yLabelWidth, xLabelHeight } = this.state
-    const { tickSize, fontSize, maxY, minY, maxX, minX } = this.state
+    const { tickSize, xAxisFontSize, yAxisFontSize, maxY, minY, maxX, minX } = this.state
+    const { legendRows, legendRowHeight } = this.state
     return (
       <div>
         <svg
-          viewBox={`0 0 ${graphWidth + (yLabelWidth * 4)} ${graphHeight + xLabelHeight}`}>
+          viewBox={`${-(yLabelWidth)} ${-xLabelHeight} ${graphWidth + 2*yLabelWidth} ${graphHeight + 2*xLabelHeight}`}>
+
+          <Legend
+            rows = { legendRows }
+            rowHeight = { legendRowHeight }/>
 
           {this.makePaths()}
 
           <Axes
-            xRoot = {this.getSvgX(minX) + yLabelWidth}
+            xRoot = {this.getSvgX(minX)}
             yRoot = {this.getSvgY(minY)}
             yTop = {this.getSvgY(maxY)}
-            xRight = {this.getSvgX(maxX) + yLabelWidth} />
+            xRight = {this.getSvgX(maxX)} />
 
           <XAxisLabels
             tickSize = { tickSize }
-            fontSize = { fontSize }
+            fontSize = { xAxisFontSize }
             graphHeight = { graphHeight }
             graphWidth = { graphWidth }
             yLabelWidth = { yLabelWidth }
@@ -104,7 +121,7 @@ export default class Graph extends Component {
 
           <YAxisLabels
             tickSize = { tickSize }
-            fontSize = { fontSize }
+            fontSize = { yAxisFontSize }
             graphHeight = { graphHeight }
             yLabelWidth = { yLabelWidth }
             maxY = { maxY }
