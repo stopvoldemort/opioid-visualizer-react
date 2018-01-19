@@ -15,32 +15,44 @@ export default class Graph extends Component {
     colors: ['blue', 'red', 'green', 'blue', 'brown', 'black'],
     graphHeight: 200,
     graphWidth: 400,
+    minX: 1999,
+    maxX: 2016,
+    minY: 0,
+    maxY: 1,
+
     yLabelWidth: 50,
     xLabelHeight: 25,
     tickSize: 10,
     xAxisFontSize: 10,
     yAxisFontSize: 10,
-    minX: 1999,
-    maxX: 2016,
-    minY: 0,
-    maxY: 1,
+
     legendRows: 1,
-    legendRowHeight: 20
+    legendRowHeight: 20,
+    legendRowBreak: 4,
+    legendFontSize: 10
   }
 
   componentDidMount = () => {
     const maxY = this.getMaxY()
     const rows = this.calcLegendRows()
+    const rowBreak = this.calcLegendRowBreak()
 
     this.setState({
       maxY: maxY,
-      legendRows: rows
+      legendRows: rows,
+      legendRowBreak: rowBreak
     })
+  }
+
+  calcLegendRowBreak = () => {
+    const {legendFontSize} = this.state
+    return legendFontSize < 15 ? 4 : 3
   }
 
   calcLegendRows = (rows) => {
     const states = Object.keys(DATA)
-    return Math.floor(states.length / 4) + 1
+    const rowBreak = this.calcLegendRowBreak()
+    return Math.floor(states.length / rowBreak) + 1
   }
 
   getMaxY() {
@@ -91,15 +103,22 @@ export default class Graph extends Component {
   render() {
     const { graphHeight, graphWidth, yLabelWidth, xLabelHeight } = this.state
     const { tickSize, xAxisFontSize, yAxisFontSize, maxY, minY, maxX, minX } = this.state
-    const { legendRows, legendRowHeight } = this.state
+    const { legendRows, legendRowHeight, legendRowBreak, legendFontSize, colors } = this.state
     return (
       <div>
         <svg
-          viewBox={`${-(yLabelWidth)} ${-xLabelHeight} ${graphWidth + 2*yLabelWidth} ${graphHeight + 2*xLabelHeight}`}>
+          viewBox={`
+            ${-(yLabelWidth)}
+            ${-(legendRows * legendRowHeight)}
+            ${graphWidth + (2 * yLabelWidth)}
+            ${graphHeight + xLabelHeight + (legendRows * legendRowHeight)}`}>
 
           <Legend
             rows = { legendRows }
-            rowHeight = { legendRowHeight }/>
+            rowHeight = { legendRowHeight }
+            rowBreak = { legendRowBreak }
+            fontSize = { legendFontSize }
+            colors = { colors }/>
 
           {this.makePaths()}
 
