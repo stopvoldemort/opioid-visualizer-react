@@ -1,0 +1,27 @@
+.graph-container {
+  width: 70%;
+  float: right;
+}
+
+.graph_path {
+  stroke-width: 5;
+  fill: none;
+}
+
+.graph_axis {
+  stroke-width: 1;
+  stroke: #bdc3c7;
+}
+
+.x-axis-label {
+  text-anchor: middle;
+}
+
+.y-axis-label {
+  text-anchor: end;
+}
+
+.legend-entry {
+  float: right;
+  text-anchor: start;
+}
