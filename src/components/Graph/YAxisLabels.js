@@ -2,20 +2,35 @@ import React from 'react'
 import cuid from 'cuid'
 import '../../style/Graph.css'
 
-export const YAxisLabels = ( { tickSize, fontSize, graphHeight, yLabelWidth, maxY }) => {
+export const YAxisLabels = ( { tickSize, fontSize, graphHeight, yLabelWidth, minY, maxY, yOrigin }) => {
 
-  const numTicks = 10
-  const svgIncrement = graphHeight / (numTicks)
+  // Need to make this a prop
+  const numTicks = 8
+  const numTicksAboveZero = Math.floor(maxY / (maxY - minY) * numTicks)
+  const svgIncrement = ( graphHeight / numTicks )
 
-  const increments = [1, 5, 10, 20, 30, 40, 50, 75, 100, 120, 150, 200, 250, 300, 400, 500, 600, 750, 1000, 1500, 2000, 3000, 4000, 5000, 7500]
-  const numIncrement = increments.find(inc => maxY / inc <=5)
+  const getIncrement = () => {
+    const increments = [1, 2, 3, 5, 10, 15, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 750, 1000, 1500, 2000, 3000, 4000, 5000, 7500]
+    return increments.find(inc => ((maxY - minY) / inc) <= numTicks)
+  }
 
+  const numIncrement = getIncrement()
+  const numTicksBelowZero = Math.floor(-minY / numIncrement)
+  console.log(maxY, minY, numTicksAboveZero, numTicksBelowZero)
+
+  const getIntervals = () => {
+    let intervals = []
+    for (let i = -numTicksBelowZero; i <= numTicksAboveZero; i++) {
+      intervals.push(i)
+    }
+    return intervals
+  }
 
   const makeLabels = () => {
-    const labels = [1,2,3,4,5].map(i => i * numIncrement)
-    const intervals = [2, 4, 6, 8, 10]
+    const intervals = getIntervals()
+    const labels = intervals.map(i => i * numIncrement)
     return intervals.map((interval, i) => {
-      const y = graphHeight - ((svgIncrement * interval))
+      const y = yOrigin - ((svgIncrement * interval))
       return (
         <g key={cuid()}>
           <line className="graph-axis"

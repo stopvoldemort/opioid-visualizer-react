@@ -11,34 +11,40 @@ import '../../style/Graph.css'
 
 export default class Graph extends Component {
 
-  state = {
-    colors: ['blue', 'red', 'green', 'blue', 'brown', 'black'],
-    graphHeight: 200,
-    graphWidth: 400,
-    minX: 1999,
-    maxX: 2016,
-    minY: 0,
-    maxY: 1,
+  constructor(props) {
+    super(props)
+    this.state = {
 
-    yLabelWidth: 50,
-    xLabelHeight: 25,
-    tickSize: 10,
-    xAxisFontSize: 10,
-    yAxisFontSize: 10,
+      colors: this.props.colors || ['blue', 'red', 'green', 'blue', 'brown', 'black'],
+      graphHeight: this.props.graphHeight || 200,
+      graphWidth: this.props.graphWidth || 400,
+      minX: this.props.minX || 1999,
+      maxX: this.props.maxX || 2016,
+      minY: this.props.minY || -1,
+      maxY: 1,
 
-    legendRows: 1,
-    legendRowHeight: 20,
-    legendRowBreak: 4,
-    legendFontSize: 10
+      yLabelWidth: this.props.yLabelWidth || 50,
+      xLabelHeight: this.props.xLabelHeight || 25,
+      tickSize: this.props.tickSize || 10,
+      xAxisFontSize: this.props.xAxisFontSize || 10,
+      yAxisFontSize: this.props.yAxisFontSize || 10,
+
+      legendRows: this.props.legendRows || 1,
+      legendRowHeight: this.props.legendRowHeight || 20,
+      legendRowBreak: this.props.legendRowBreak || 4,
+      legendFontSize: this.props.legendFontSize || 10
+
+    }
   }
 
   componentDidMount = () => {
-    const maxY = this.getMaxY()
+    const maxY = this.props.maxY || this.getMaxY()
+    const minY = this.props.maxY || this.getMinY()
     const rows = this.calcLegendRows()
     const rowBreak = this.calcLegendRowBreak()
-
     this.setState({
       maxY: maxY,
+      minY: minY,
       legendRows: rows,
       legendRowBreak: rowBreak
     })
@@ -66,18 +72,27 @@ export default class Graph extends Component {
     return max
   }
 
+  getMinY() {
+    let min = 0
+    const states = Object.keys(DATA)
+    states.forEach(state => {
+      DATA[state].forEach(year => {
+        min = Math.min(min, year.deaths)
+      })
+    })
+    return min
+  }
+
   rawToCoordinates = (data) => (data.map(el => ({ x: el.year, y: el.deaths} )))
 
   getSvgX(x) {
     const { graphWidth, minX, maxX } = this.state
-    const diff = x - minX
-    const possibleDiff = maxX - minX
-    return (graphWidth * diff / possibleDiff);
+    return (graphWidth * (x - minX) / (maxX - minX))
   }
 
   getSvgY(y) {
-    const { graphHeight, maxY } = this.state
-    return graphHeight - (y / maxY * graphHeight);
+    const { graphHeight, maxY, minY } = this.state
+    return graphHeight - ( (y - minY) / (maxY - minY) * graphHeight);
   }
 
   makePaths() {
@@ -123,10 +138,13 @@ export default class Graph extends Component {
           {this.makePaths()}
 
           <Axes
-            xRoot = {this.getSvgX(minX)}
-            yRoot = {this.getSvgY(minY)}
-            yTop = {this.getSvgY(maxY)}
-            xRight = {this.getSvgX(maxX)} />
+            xOrigin = { minX < 0 ? this.getSvgX(0) : this.getSvgX(minX) }
+            yOrigin = { minY < 0 ? this.getSvgY(0) : this.getSvgY(minY) }
+            xMin = {this.getSvgX(minX)}
+            xMax = {this.getSvgX(maxX)}
+            yMin = {this.getSvgY(minY)}
+            yMax = {this.getSvgY(maxY)}
+          />
 
           <XAxisLabels
             tickSize = { tickSize }
@@ -143,7 +161,9 @@ export default class Graph extends Component {
             fontSize = { yAxisFontSize }
             graphHeight = { graphHeight }
             yLabelWidth = { yLabelWidth }
+            yOrigin = { minY < 0 ? this.getSvgY(0) : this.getSvgY(minY) }
             maxY = { maxY }
+            minY = { minY }
           />
 
         </svg>

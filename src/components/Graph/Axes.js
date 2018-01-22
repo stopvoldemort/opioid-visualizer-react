@@ -1,15 +1,15 @@
 import React from 'react'
 
-export const Axes = ({ xRoot, yRoot, xRight, yTop }) => {
+export const Axes = ({ xOrigin, yOrigin, xMin, xMax, yMin, yMax }) => {
 
   return (
     <g className="graph_axis">
       <line
-        x1={ xRoot } y1={ yRoot }
-        x2={ xRight } y2={ yRoot } />
+        x1={ xOrigin } y1={ yOrigin }
+        x2={ xMax } y2={ yOrigin } />
       <line
-        x1={ xRoot } y1={ yRoot }
-        x2={ xRoot } y2={ yTop } />
+        x1={ xOrigin } y1={ yMin }
+        x2={ xOrigin } y2={ yMax } />
     </g>
   )
 }

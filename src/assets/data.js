@@ -95,7 +95,7 @@ export const DATA = {
     {year: 2015, deaths: 210},
     {year: 2016, deaths: 220}
   ], "morefake": [
-    {year: 1999, deaths: 55},
+    {year: 1999, deaths: -550},
     {year: 2000, deaths: 65},
     {year: 2001, deaths: 75},
     {year: 2002, deaths: 85},
