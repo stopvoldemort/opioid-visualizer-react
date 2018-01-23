@@ -1,3 +1,3 @@
-## A single-page website that displays trends in drug overdoses by geographic area.
+## A React Component for making customizable line graphs.
 
-An additional goal is to turn the custom line graph generator I built into a stand-alone React library.
+The goal will be to turn this into a stand-alone React library.
