@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import GraphContainer from './components/Graph/GraphContainer.js'
+import React, { Component } from "react";
+import GraphContainer from "./components/Graph/GraphContainer.js";
 
 class App extends Component {
   render() {

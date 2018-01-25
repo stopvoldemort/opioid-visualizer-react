@@ -1,173 +1,235 @@
-import React, { Component } from 'react'
-import { Axes } from './Axes.js'
-import { XAxisLabels } from './XAxisLabels.js'
-import { YAxisLabels } from './YAxisLabels.js'
-import { Legend } from './Legend.js'
-import { DATA } from '../../assets/data.js'
-import cuid from 'cuid'
-import '../../style/Graph.css'
-
-
+import React, { Component } from "react";
+import { Axes } from "./Axes.js";
+import { XAxisLabels } from "./XAxisLabels.js";
+import { YAxisLabels } from "./YAxisLabels.js";
+import { Legend } from "./Legend.js";
+import { DATA } from "../../assets/data.js";
+import { increments } from "../../assets/increments.js";
+import cuid from "cuid";
+import "../../style/Graph.css";
 
 export default class Graph extends Component {
-
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
+      // Line info: add dotted line, line breaks
+      colors: this.props.colors || [
+        "blue",
+        "red",
+        "green",
+        "blue",
+        "brown",
+        "black"
+      ],
 
-      colors: this.props.colors || ['blue', 'red', 'green', 'blue', 'brown', 'black'],
+      // Graph area info: add background color, gridlines
       graphHeight: this.props.graphHeight || 200,
       graphWidth: this.props.graphWidth || 400,
-      minX: this.props.minX || 1999,
-      maxX: this.props.maxX || 2016,
-      minY: this.props.minY || -1,
-      maxY: 1,
 
-      yLabelWidth: this.props.yLabelWidth || 50,
-      xLabelHeight: this.props.xLabelHeight || 25,
-      tickSize: this.props.tickSize || 10,
-      xAxisFontSize: this.props.xAxisFontSize || 10,
+      // Not sure these are needed
+      minDataX: this.props.minDataX || 1999,
+      maxDataX: this.props.maxDataX || 2016,
+      // minDataY: this.props.minDataY || -1,
+      // maxDataY: this.props.maxDataX || 1,
+
+      // Y axis: Need to add yAxisMax, yAxisMin
+      yAxisMin: this.props.yAxisMin || -1,
+      yAxisMax: this.props.yAxisMax || 1,
+      yLabelIncrement: this.props.yLabelIncrement || 1,
       yAxisFontSize: this.props.yAxisFontSize || 10,
+      yTickSize: this.props.yTickSize || 10,
+      // Not needed -- can be calculated from font and tick size
+      yLabelWidth: this.props.yLabelWidth || 50,
 
+      // X axis: Need to add xAxisMax, xAxisMin
+      xAxisFontSize: this.props.xAxisFontSize || 10,
+      xTickSize: this.props.xTickSize || 10,
+      // Not needed -- can be calculated from font and tick size
+      xLabelHeight: this.props.xLabelHeight || 25,
+
+      // Legend
       legendRows: this.props.legendRows || 1,
       legendRowHeight: this.props.legendRowHeight || 20,
       legendRowBreak: this.props.legendRowBreak || 4,
       legendFontSize: this.props.legendFontSize || 10
-
-    }
+    };
   }
 
   componentDidMount = () => {
-    const maxY = this.props.maxY || this.getMaxY()
-    const minY = this.props.maxY || this.getMinY()
-    const rows = this.calcLegendRows()
-    const rowBreak = this.calcLegendRowBreak()
+    const maxDataY = this.getMaxY();
+    const minDataY = this.getMinY();
+    const yLabelIncrement =
+      this.props.yLabelIncrement || this.calcIncrements(minDataY, maxDataY);
+    const yAxisMax =
+      this.props.yAxisMax || this.calcAxisMax(yLabelIncrement, maxDataY);
+    const yAxisMin =
+      this.props.yAxisMin || this.calcAxisMin(yLabelIncrement, minDataY);
+    const rows = this.calcLegendRows();
+    const rowBreak = this.calcLegendRowBreak();
     this.setState({
-      maxY: maxY,
-      minY: minY,
+      // maxDataY: maxDataY,
+      // minDataY: minDataY,
+      yAxisMax: yAxisMax,
+      yAxisMin: yAxisMin,
+      yLabelIncrement: yLabelIncrement,
       legendRows: rows,
       legendRowBreak: rowBreak
-    })
-  }
+    });
+  };
+
+  calcIncrements = (minData, maxData) =>
+    // Default assumes 8 axis labels
+    increments.find(inc => (maxData - minData) / inc <= 8);
+
+  calcAxisMax = (increment, dataLimit) =>
+    Math.ceil(dataLimit / increment) * increment;
+
+  calcAxisMin = (increment, dataLimit) =>
+    Math.floor(dataLimit / increment) * increment;
 
   calcLegendRowBreak = () => {
-    const {legendFontSize} = this.state
-    return legendFontSize < 15 ? 4 : 3
-  }
+    const { legendFontSize } = this.state;
+    return legendFontSize < 15 ? 4 : 3;
+  };
 
-  calcLegendRows = (rows) => {
-    const states = Object.keys(DATA)
-    const rowBreak = this.calcLegendRowBreak()
-    return Math.floor(states.length / rowBreak) + 1
-  }
+  calcLegendRows = rows => {
+    const states = Object.keys(DATA);
+    const rowBreak = this.calcLegendRowBreak();
+    return Math.floor(states.length / rowBreak) + 1;
+  };
 
   getMaxY() {
-    let max = 0
-    const states = Object.keys(DATA)
+    let max = 0;
+    const states = Object.keys(DATA);
     states.forEach(state => {
       DATA[state].forEach(year => {
-        max = Math.max(max, year.deaths)
-      })
-    })
-    return max
+        max = Math.max(max, year.deaths);
+      });
+    });
+    return max;
   }
 
   getMinY() {
-    let min = 0
-    const states = Object.keys(DATA)
+    let min = 0;
+    const states = Object.keys(DATA);
     states.forEach(state => {
       DATA[state].forEach(year => {
-        min = Math.min(min, year.deaths)
-      })
-    })
-    return min
+        min = Math.min(min, year.deaths);
+      });
+    });
+    return min;
   }
 
-  rawToCoordinates = (data) => (data.map(el => ({ x: el.year, y: el.deaths} )))
+  rawToCoordinates = data => data.map(el => ({ x: el.year, y: el.deaths }));
 
   getSvgX(x) {
-    const { graphWidth, minX, maxX } = this.state
-    return (graphWidth * (x - minX) / (maxX - minX))
+    const { graphWidth, minDataX, maxDataX } = this.state;
+    return graphWidth * (x - minDataX) / (maxDataX - minDataX);
   }
 
   getSvgY(y) {
-    const { graphHeight, maxY, minY } = this.state
-    return graphHeight - ( (y - minY) / (maxY - minY) * graphHeight);
+    const { graphHeight, yAxisMin, yAxisMax } = this.state;
+    return graphHeight - (y - yAxisMin) / (yAxisMax - yAxisMin) * graphHeight;
   }
 
   makePaths() {
-    const { colors } = this.state
-    const states = Object.keys(DATA)
+    const { colors } = this.state;
+    const states = Object.keys(DATA);
     return states.map((state, i) => {
-      const pathData = this.rawToCoordinates(DATA[state])
-      return this.makePath(pathData, colors[i])
-    })
+      const pathData = this.rawToCoordinates(DATA[state]);
+      return this.makePath(pathData, colors[i]);
+    });
   }
 
   makePath(data, color) {
-    let pathD = "M " + (this.getSvgX(data[0].x)) + " " + this.getSvgY(data[0].y) + " "
+    let pathD =
+      "M " + this.getSvgX(data[0].x) + " " + this.getSvgY(data[0].y) + " ";
     pathD += data.map((point, i) => {
-      return "L " + (this.getSvgX(point.x)) + " " + this.getSvgY(point.y) + " "
-    })
+      return "L " + this.getSvgX(point.x) + " " + this.getSvgY(point.y) + " ";
+    });
     return (
-      <path key={cuid()} className="graph_path" d={pathD} style={{stroke: color}} />
-    )
+      <path
+        key={cuid()}
+        className="graph_path"
+        d={pathD}
+        style={{ stroke: color }}
+      />
+    );
   }
 
-
   render() {
-    const { graphHeight, graphWidth, yLabelWidth, xLabelHeight } = this.state
-    const { tickSize, xAxisFontSize, yAxisFontSize, maxY, minY, maxX, minX } = this.state
-    const { legendRows, legendRowHeight, legendRowBreak, legendFontSize, colors } = this.state
+    const {
+      graphHeight,
+      graphWidth,
+      yAxisMax,
+      yAxisMin,
+      yLabelIncrement,
+      yLabelWidth,
+      xLabelHeight,
+      yTickSize,
+      xTickSize,
+      xAxisFontSize,
+      yAxisFontSize,
+      // maxDataY,
+      // minDataY,
+      maxDataX,
+      minDataX,
+      legendRows,
+      legendRowHeight,
+      legendRowBreak,
+      legendFontSize,
+      colors
+    } = this.state;
     return (
       <div>
         <svg
           viewBox={`
-            ${-(yLabelWidth)}
+            ${-yLabelWidth}
             ${-(legendRows * legendRowHeight)}
-            ${graphWidth + (2 * yLabelWidth)}
-            ${graphHeight + xLabelHeight + (legendRows * legendRowHeight)}`}>
-
+            ${graphWidth + 2 * yLabelWidth}
+            ${graphHeight + xLabelHeight + legendRows * legendRowHeight}`}
+        >
           <Legend
-            rows = { legendRows }
-            rowHeight = { legendRowHeight }
-            rowBreak = { legendRowBreak }
-            fontSize = { legendFontSize }
-            colors = { colors }/>
+            rows={legendRows}
+            rowHeight={legendRowHeight}
+            rowBreak={legendRowBreak}
+            fontSize={legendFontSize}
+            colors={colors}
+          />
 
           {this.makePaths()}
 
           <Axes
-            xOrigin = { minX < 0 ? this.getSvgX(0) : this.getSvgX(minX) }
-            yOrigin = { minY < 0 ? this.getSvgY(0) : this.getSvgY(minY) }
-            xMin = {this.getSvgX(minX)}
-            xMax = {this.getSvgX(maxX)}
-            yMin = {this.getSvgY(minY)}
-            yMax = {this.getSvgY(maxY)}
+            xOrigin={minDataX < 0 ? this.getSvgX(0) : this.getSvgX(minDataX)}
+            yOrigin={yAxisMin < 0 ? this.getSvgY(0) : this.getSvgY(yAxisMin)}
+            minDataX={this.getSvgX(minDataX)}
+            maxDataX={this.getSvgX(maxDataX)}
+            yAxisMin={this.getSvgY(yAxisMin)}
+            yAxisMax={this.getSvgY(yAxisMax)}
           />
 
           <XAxisLabels
-            tickSize = { tickSize }
-            fontSize = { xAxisFontSize }
-            graphHeight = { graphHeight }
-            graphWidth = { graphWidth }
-            yLabelWidth = { yLabelWidth }
-            xLabelHeight = { xLabelHeight }
-            numTicks = { 18 }
+            xTickSize={xTickSize}
+            fontSize={xAxisFontSize}
+            graphHeight={graphHeight}
+            graphWidth={graphWidth}
+            yLabelWidth={yLabelWidth}
+            xLabelHeight={xLabelHeight}
+            numTicks={18}
           />
 
           <YAxisLabels
-            tickSize = { tickSize }
-            fontSize = { yAxisFontSize }
-            graphHeight = { graphHeight }
-            yLabelWidth = { yLabelWidth }
-            yOrigin = { minY < 0 ? this.getSvgY(0) : this.getSvgY(minY) }
-            maxY = { maxY }
-            minY = { minY }
+            yLabelIncrement={yLabelIncrement}
+            yTickSize={yTickSize}
+            fontSize={yAxisFontSize}
+            graphHeight={graphHeight}
+            yLabelWidth={yLabelWidth}
+            yOrigin={yAxisMin < 0 ? this.getSvgY(0) : this.getSvgY(yAxisMin)}
+            yAxisMin={yAxisMin}
+            yAxisMax={yAxisMax}
           />
-
         </svg>
       </div>
-    )
+    );
   }
 }
