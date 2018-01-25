@@ -33,8 +33,8 @@ export default class Graph extends Component {
       // maxDataY: this.props.maxDataX || 1,
 
       // Y axis
-      yAxisMin: this.props.yAxisMin || -1,
-      yAxisMax: this.props.yAxisMax || 1,
+      yAxisMin: -1,
+      yAxisMax: 1,
       yLabelIncrement: this.props.yLabelIncrement || 1,
       yAxisFontSize: this.props.yAxisFontSize || 10,
       yTickSize: this.props.yTickSize || 10,
@@ -42,8 +42,8 @@ export default class Graph extends Component {
       yLabelWidth: this.props.yLabelWidth || 50,
 
       // X axis: Need to add xAxisMax, xAxisMin
-      xAxisMin: this.props.xAxisMin || -1,
-      xAxisMax: this.props.xAxisMax || 1,
+      xAxisMin: -1,
+      xAxisMax: 1,
       xLabelIncrement: this.props.xLabelIncrement || 1,
       xAxisFontSize: this.props.xAxisFontSize || 10,
       xTickSize: this.props.xTickSize || 10,
@@ -68,11 +68,23 @@ export default class Graph extends Component {
       this.props.yAxisMax || this.calcAxisMax(yLabelIncrement, maxDataY);
     const yAxisMin =
       this.props.yAxisMin || this.calcAxisMin(yLabelIncrement, minDataY);
+
+    const minDataX = minMax.xMin;
+    const maxDataX = minMax.xMax;
+    const xLabelIncrement =
+      this.props.xLabelIncrement || this.calcIncrements(minDataX, maxDataX);
+    const xAxisMax =
+      this.props.xAxisMax || this.calcAxisMax(xLabelIncrement, maxDataX);
+    const xAxisMin =
+      this.props.xAxisMin || this.calcAxisMin(xLabelIncrement, minDataX);
+
     const rows = this.calcLegendRows();
     const rowBreak = this.calcLegendRowBreak();
     this.setState({
       yAxisMax: yAxisMax,
       yAxisMin: yAxisMin,
+      xAxisMax: xAxisMax,
+      xAxisMin: xAxisMin,
       yLabelIncrement: yLabelIncrement,
       legendRows: rows,
       legendRowBreak: rowBreak
@@ -116,8 +128,9 @@ export default class Graph extends Component {
   }
 
   getSvgX(x) {
-    const { graphWidth, minDataX, maxDataX } = this.state;
-    return graphWidth * (x - minDataX) / (maxDataX - minDataX);
+    const { graphWidth, xAxisMin, xAxisMax } = this.state;
+    console.log(xAxisMax, xAxisMin);
+    return graphWidth * (x - xAxisMin) / (xAxisMax - xAxisMin);
   }
 
   getSvgY(y) {
@@ -156,15 +169,15 @@ export default class Graph extends Component {
       yAxisMin,
       yLabelIncrement,
       yLabelWidth,
-      xLabelHeight,
       yTickSize,
+      yAxisFontSize,
+      xAxisMax,
+      xAxisMin,
+      // Need to redo x labels similar to y labels,
+      xLabelIncrement,
+      xLabelHeight,
       xTickSize,
       xAxisFontSize,
-      yAxisFontSize,
-      // maxDataY,
-      // minDataY,
-      maxDataX,
-      minDataX,
       legendRows,
       legendRowHeight,
       legendRowBreak,
@@ -191,10 +204,10 @@ export default class Graph extends Component {
           {this.makePaths()}
 
           <Axes
-            xOrigin={minDataX < 0 ? this.getSvgX(0) : this.getSvgX(minDataX)}
+            xOrigin={xAxisMin < 0 ? this.getSvgX(0) : this.getSvgX(xAxisMin)}
             yOrigin={yAxisMin < 0 ? this.getSvgY(0) : this.getSvgY(yAxisMin)}
-            minDataX={this.getSvgX(minDataX)}
-            maxDataX={this.getSvgX(maxDataX)}
+            xAxisMin={this.getSvgX(xAxisMin)}
+            xAxisMax={this.getSvgX(xAxisMax)}
             yAxisMin={this.getSvgY(yAxisMin)}
             yAxisMax={this.getSvgY(yAxisMax)}
           />
