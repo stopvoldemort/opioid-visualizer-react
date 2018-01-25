@@ -1,117 +1,121 @@
-// import * as d3 from "d3"
-//
-// export const stateData = () => {
-//   // For some reason, this reads index.html rather than stateData.txt
-//   d3.tsvParseRows('../stateData.tsv', function(error, text) {
-//     if (error) throw error
-//     console.log(text);
-//   })
-// }
-
-// export const STATES: State[] = [
-//   { id: 1, name: "vermont", crudeRate: 17.7, deaths: 111, population: 626042, year: 2015 },
-//   { id: 2, name: "new hampshire", crudeRate: 32.5, deaths: 433, population: 1330608, year: 2015 },
-//   { id: 3, name: "maine", crudeRate: 20.9, deaths: 278, population: 1329328, year: 2015 },
-//   { id: 4, name: "massachusetts", crudeRate: 27.2, deaths: 1851, population: 6794422, year: 2015 },
-//   { id: 5, name: "connecticut", crudeRate: 23.0, deaths: 827, population: 3590886, year: 2015 },
-//   { id: 6, name: "rhode island", crudeRate: 30.1, deaths: 318, population: 1056298, year: 2015 }
-// ]
-
 export const DATA = {
-  "VT": [
-    {year: 1999, deaths: 31},
-    {year: 2000, deaths: 37},
-    {year: 2001, deaths: 53},
-    {year: 2002, deaths: 54},
-    {year: 2003, deaths: 73},
-    {year: 2004, deaths: 52},
-    {year: 2005, deaths: 55},
-    {year: 2006, deaths: 83},
-    {year: 2007, deaths: 68},
-    {year: 2008, deaths: 76},
-    {year: 2009, deaths: 57},
-    {year: 2010, deaths: 68},
-    {year: 2011, deaths: 87},
-    {year: 2012, deaths: 81},
-    {year: 2013, deaths: 99},
-    {year: 2014, deaths: 90},
-    {year: 2015, deaths: 111},
-    {year: 2016, deaths: 131}
-  ], "NH": [
-    {year: 1999, deaths: 62},
-    {year: 2000, deaths: 49},
-    {year: 2001, deaths: 83},
-    {year: 2002, deaths: 114},
-    {year: 2003, deaths: 137},
-    {year: 2004, deaths: 128},
-    {year: 2005, deaths: 152},
-    {year: 2006, deaths: 160},
-    {year: 2007, deaths: 187},
-    {year: 2008, deaths: 129},
-    {year: 2009, deaths: 172},
-    {year: 2010, deaths: 164},
-    {year: 2011, deaths: 212},
-    {year: 2012, deaths: 177},
-    {year: 2013, deaths: 217},
-    {year: 2014, deaths: 248},
-    {year: 2015, deaths: 433},
-    {year: 2016, deaths: 495}
-  ], "ME": [
-    {year: 1999, deaths: 70},
-    {year: 2000, deaths: 62},
-    {year: 2001, deaths: 92},
-    {year: 2002, deaths: 147},
-    {year: 2003, deaths: 134},
-    {year: 2004, deaths: 145},
-    {year: 2005, deaths: 168},
-    {year: 2006, deaths: 166},
-    {year: 2007, deaths: 161},
-    {year: 2008, deaths: 162},
-    {year: 2009, deaths: 182},
-    {year: 2010, deaths: 140},
-    {year: 2011, deaths: 160},
-    {year: 2012, deaths: 157},
-    {year: 2013, deaths: 183},
-    {year: 2014, deaths: 227},
-    {year: 2015, deaths: 278},
-    {year: 2016, deaths: 369}
-  ], "fake": [
-    {year: 1999, deaths: 50},
-    {year: 2000, deaths: 60},
-    {year: 2001, deaths: 70},
-    {year: 2002, deaths: 80},
-    {year: 2003, deaths: 90},
-    {year: 2004, deaths: 100},
-    {year: 2005, deaths: 110},
-    {year: 2006, deaths: 120},
-    {year: 2007, deaths: 130},
-    {year: 2008, deaths: 140},
-    {year: 2009, deaths: 150},
-    {year: 2010, deaths: 160},
-    {year: 2011, deaths: 170},
-    {year: 2012, deaths: 180},
-    {year: 2013, deaths: 190},
-    {year: 2014, deaths: 200},
-    {year: 2015, deaths: 210},
-    {year: 2016, deaths: 220}
-  ], "morefake": [
-    {year: 1999, deaths: -550},
-    {year: 2000, deaths: 65},
-    {year: 2001, deaths: 75},
-    {year: 2002, deaths: 85},
-    {year: 2003, deaths: 95},
-    {year: 2004, deaths: 105},
-    {year: 2005, deaths: 115},
-    {year: 2006, deaths: 125},
-    {year: 2007, deaths: 135},
-    {year: 2008, deaths: 145},
-    {year: 2009, deaths: 155},
-    {year: 2010, deaths: 165},
-    {year: 2011, deaths: 175},
-    {year: 2012, deaths: 185},
-    {year: 2013, deaths: 195},
-    {year: 2014, deaths: 205},
-    {year: 2015, deaths: 215},
-    {year: 2016, deaths: 225}
+  xLabel: "year",
+  yLabel: "deaths",
+  inputs: [
+    {
+      name: "VT",
+      data: [
+        { x: 1999, y: 31 },
+        { x: 2000, y: 37 },
+        { x: 2001, y: 53 },
+        { x: 2002, y: 54 },
+        { x: 2003, y: 73 },
+        { x: 2004, y: 52 },
+        { x: 2005, y: 55 },
+        { x: 2006, y: 83 },
+        { x: 2007, y: 68 },
+        { x: 2008, y: 76 },
+        { x: 2009, y: 57 },
+        { x: 2010, y: 68 },
+        { x: 2011, y: 87 },
+        { x: 2012, y: 81 },
+        { x: 2013, y: 99 },
+        { x: 2014, y: 90 },
+        { x: 2015, y: 111 },
+        { x: 2016, y: 131 }
+      ]
+    },
+    {
+      name: "NH",
+      data: [
+        { x: 1999, y: 62 },
+        { x: 2000, y: 49 },
+        { x: 2001, y: 83 },
+        { x: 2002, y: 114 },
+        { x: 2003, y: 137 },
+        { x: 2004, y: 128 },
+        { x: 2005, y: 152 },
+        { x: 2006, y: 160 },
+        { x: 2007, y: 187 },
+        { x: 2008, y: 129 },
+        { x: 2009, y: 172 },
+        { x: 2010, y: 164 },
+        { x: 2011, y: 212 },
+        { x: 2012, y: 177 },
+        { x: 2013, y: 217 },
+        { x: 2014, y: 248 },
+        { x: 2015, y: 433 },
+        { x: 2016, y: 495 }
+      ]
+    },
+    {
+      name: "ME",
+      data: [
+        { x: 1999, y: 70 },
+        { x: 2000, y: 62 },
+        { x: 2001, y: 92 },
+        { x: 2002, y: 147 },
+        { x: 2003, y: 134 },
+        { x: 2004, y: 145 },
+        { x: 2005, y: 168 },
+        { x: 2006, y: 166 },
+        { x: 2007, y: 161 },
+        { x: 2008, y: 162 },
+        { x: 2009, y: 182 },
+        { x: 2010, y: 140 },
+        { x: 2011, y: 160 },
+        { x: 2012, y: 157 },
+        { x: 2013, y: 183 },
+        { x: 2014, y: 227 },
+        { x: 2015, y: 278 },
+        { x: 2016, y: 369 }
+      ]
+    },
+    {
+      name: "fake",
+      data: [
+        { x: 1999, y: 50 },
+        { x: 2000, y: 60 },
+        { x: 2001, y: 70 },
+        { x: 2002, y: 80 },
+        { x: 2003, y: 90 },
+        { x: 2004, y: 100 },
+        { x: 2005, y: 110 },
+        { x: 2006, y: 120 },
+        { x: 2007, y: 130 },
+        { x: 2008, y: 140 },
+        { x: 2009, y: 150 },
+        { x: 2010, y: 160 },
+        { x: 2011, y: 170 },
+        { x: 2012, y: 180 },
+        { x: 2013, y: 190 },
+        { x: 2014, y: 200 },
+        { x: 2015, y: 210 },
+        { x: 2016, y: 220 }
+      ]
+    },
+    {
+      name: "morefake",
+      data: [
+        { x: 1999, y: -550 },
+        { x: 2000, y: 65 },
+        { x: 2001, y: 75 },
+        { x: 2002, y: 85 },
+        { x: 2003, y: 95 },
+        { x: 2004, y: 105 },
+        { x: 2005, y: 115 },
+        { x: 2006, y: 125 },
+        { x: 2007, y: 135 },
+        { x: 2008, y: 145 },
+        { x: 2009, y: 155 },
+        { x: 2010, y: 165 },
+        { x: 2011, y: 175 },
+        { x: 2012, y: 185 },
+        { x: 2013, y: 195 },
+        { x: 2014, y: 205 },
+        { x: 2015, y: 215 },
+        { x: 2016, y: 225 }
+      ]
+    }
   ]
-}
+};

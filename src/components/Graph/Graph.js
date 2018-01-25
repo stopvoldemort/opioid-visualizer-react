@@ -32,7 +32,7 @@ export default class Graph extends Component {
       // minDataY: this.props.minDataY || -1,
       // maxDataY: this.props.maxDataX || 1,
 
-      // Y axis: Need to add yAxisMax, yAxisMin
+      // Y axis
       yAxisMin: this.props.yAxisMin || -1,
       yAxisMax: this.props.yAxisMax || 1,
       yLabelIncrement: this.props.yLabelIncrement || 1,
@@ -42,6 +42,9 @@ export default class Graph extends Component {
       yLabelWidth: this.props.yLabelWidth || 50,
 
       // X axis: Need to add xAxisMax, xAxisMin
+      xAxisMin: this.props.xAxisMin || -1,
+      xAxisMax: this.props.xAxisMax || 1,
+      xLabelIncrement: this.props.xLabelIncrement || 1,
       xAxisFontSize: this.props.xAxisFontSize || 10,
       xTickSize: this.props.xTickSize || 10,
       // Not needed -- can be calculated from font and tick size
@@ -56,8 +59,9 @@ export default class Graph extends Component {
   }
 
   componentDidMount = () => {
-    const maxDataY = this.getMaxY();
-    const minDataY = this.getMinY();
+    const minMax = this.getMinMax();
+    const minDataY = minMax.yMin;
+    const maxDataY = minMax.yMax;
     const yLabelIncrement =
       this.props.yLabelIncrement || this.calcIncrements(minDataY, maxDataY);
     const yAxisMax =
@@ -67,8 +71,6 @@ export default class Graph extends Component {
     const rows = this.calcLegendRows();
     const rowBreak = this.calcLegendRowBreak();
     this.setState({
-      // maxDataY: maxDataY,
-      // minDataY: minDataY,
       yAxisMax: yAxisMax,
       yAxisMin: yAxisMin,
       yLabelIncrement: yLabelIncrement,
@@ -81,11 +83,11 @@ export default class Graph extends Component {
     // Default assumes 8 axis labels
     increments.find(inc => (maxData - minData) / inc <= 8);
 
-  calcAxisMax = (increment, dataLimit) =>
-    Math.ceil(dataLimit / increment) * increment;
+  calcAxisMax = (increment, maxData) =>
+    Math.ceil(maxData / increment) * increment;
 
-  calcAxisMin = (increment, dataLimit) =>
-    Math.floor(dataLimit / increment) * increment;
+  calcAxisMin = (increment, minData) =>
+    Math.floor(minData / increment) * increment;
 
   calcLegendRowBreak = () => {
     const { legendFontSize } = this.state;
@@ -93,34 +95,25 @@ export default class Graph extends Component {
   };
 
   calcLegendRows = rows => {
-    const states = Object.keys(DATA);
     const rowBreak = this.calcLegendRowBreak();
-    return Math.floor(states.length / rowBreak) + 1;
+    return Math.floor(DATA.inputs.length / rowBreak) + 1;
   };
 
-  getMaxY() {
-    let max = 0;
-    const states = Object.keys(DATA);
-    states.forEach(state => {
-      DATA[state].forEach(year => {
-        max = Math.max(max, year.deaths);
+  getMinMax() {
+    let xMin = 0;
+    let xMax = 0;
+    let yMin = 0;
+    let yMax = 0;
+    DATA.inputs.forEach(input => {
+      input.data.forEach(point => {
+        xMin = Math.min(xMin, point.x);
+        xMax = Math.max(xMax, point.x);
+        yMin = Math.min(yMin, point.y);
+        yMax = Math.max(yMax, point.y);
       });
     });
-    return max;
+    return { xMin: xMin, xMax: xMax, yMin: yMin, yMax: yMax };
   }
-
-  getMinY() {
-    let min = 0;
-    const states = Object.keys(DATA);
-    states.forEach(state => {
-      DATA[state].forEach(year => {
-        min = Math.min(min, year.deaths);
-      });
-    });
-    return min;
-  }
-
-  rawToCoordinates = data => data.map(el => ({ x: el.year, y: el.deaths }));
 
   getSvgX(x) {
     const { graphWidth, minDataX, maxDataX } = this.state;
@@ -134,10 +127,8 @@ export default class Graph extends Component {
 
   makePaths() {
     const { colors } = this.state;
-    const states = Object.keys(DATA);
-    return states.map((state, i) => {
-      const pathData = this.rawToCoordinates(DATA[state]);
-      return this.makePath(pathData, colors[i]);
+    return DATA.inputs.map((input, i) => {
+      return this.makePath(input.data, colors[i]);
     });
   }
 
