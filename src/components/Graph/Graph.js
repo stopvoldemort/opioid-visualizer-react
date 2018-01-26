@@ -23,14 +23,7 @@ export default class Graph extends Component {
         ]
       },
       // Line info: add dotted line, line breaks
-      colors: this.props.colors || [
-        "blue",
-        "red",
-        "green",
-        "blue",
-        "brown",
-        "black"
-      ],
+      colors: [],
 
       // Graph area info: add background color, gridlines
       graphHeight: this.props.graphHeight || 200,
@@ -65,6 +58,7 @@ export default class Graph extends Component {
   }
 
   componentDidMount = () => {
+    const colors = this.props.colors || this.defaultColors();
     const minMax = this.getMinMax();
     const minDataY = minMax.yMin;
     const maxDataY = minMax.yMax;
@@ -93,6 +87,7 @@ export default class Graph extends Component {
     const legendRowHeight = this.state.legendFontSize * 2;
 
     this.setState({
+      colors: colors,
       yAxisMax: yAxisMax,
       yAxisMin: yAxisMin,
       xAxisMax: xAxisMax,
@@ -106,6 +101,15 @@ export default class Graph extends Component {
       legendLabels: legendLabels,
       legendRowHeight: legendRowHeight
     });
+  };
+
+  defaultColors = () => {
+    const defaultColors = ["blue", "red", "green", "brown", "purple", "black"];
+    const selectedColors = [];
+    for (let i = 0; i < this.state.data.inputs.length; i++) {
+      selectedColors.push(defaultColors[i % defaultColors.length]);
+    }
+    return selectedColors;
   };
 
   calcIncrements = (minData, maxData) =>

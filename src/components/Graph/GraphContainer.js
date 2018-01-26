@@ -6,11 +6,7 @@ export default class GraphContainer extends Component {
   render() {
     return (
       <div>
-        <Graph
-          colors={["blue", "red", "green", "blue", "brown", "black"]}
-          xAxisLabelPlacement="edge"
-          data={DATA}
-        />
+        <Graph xAxisLabelPlacement="edge" data={DATA} />
       </div>
     );
   }
