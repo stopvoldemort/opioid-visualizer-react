@@ -3,14 +3,15 @@ import { Axes } from "./Axes.js";
 import { XAxisLabels } from "./XAxisLabels.js";
 import { YAxisLabels } from "./YAxisLabels.js";
 import { Legend } from "./Legend.js";
+import { Lines } from "./Lines.js";
 import { increments } from "../../assets/increments.js";
-import cuid from "cuid";
 import "../../style/Graph.css";
 
 export default class Graph extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      // Should have a test for whether the data object is valid
       data: this.props.data || {
         xLabel: "no data",
         yLabel: "no data",
@@ -35,6 +36,7 @@ export default class Graph extends Component {
       graphHeight: this.props.graphHeight || 200,
       graphWidth: this.props.graphWidth || 400,
 
+      // Axes: Would be good to abstract axis label behavior into a class
       // Y axis
       yAxisMin: this.props.yAxisMin || -1,
       yAxisMax: this.props.yAxisMax || 1,
@@ -53,7 +55,7 @@ export default class Graph extends Component {
       xAxisLabelPlacement: this.props.xAxisLabelPlacement || "edge",
       xLabelHeight: 1,
 
-      // Legend
+      // Legend: Make the row calculation and spacing more robust
       legendFontSize: this.props.legendFontSize || 10,
       legendRows: 1,
       legendRowBreak: 1,
@@ -107,7 +109,7 @@ export default class Graph extends Component {
   };
 
   calcIncrements = (minData, maxData) =>
-    // Default assumes 8 axis labels
+    // Default assumption is 8 axis labels
     increments.find(inc => (maxData - minData) / inc <= 8);
 
   calcAxisMax = (increment, maxData) =>
@@ -152,29 +154,6 @@ export default class Graph extends Component {
     return graphHeight - (y - yAxisMin) / (yAxisMax - yAxisMin) * graphHeight;
   }
 
-  makePaths() {
-    const { colors } = this.state;
-    return this.state.data.inputs.map((input, i) => {
-      return this.makePath(input.data, colors[i]);
-    });
-  }
-
-  makePath(data, color) {
-    let pathD =
-      "M " + this.getSvgX(data[0].x) + " " + this.getSvgY(data[0].y) + " ";
-    pathD += data.map((point, i) => {
-      return "L " + this.getSvgX(point.x) + " " + this.getSvgY(point.y) + " ";
-    });
-    return (
-      <path
-        key={cuid()}
-        className="graph_path"
-        d={pathD}
-        style={{ stroke: color }}
-      />
-    );
-  }
-
   render() {
     const {
       graphHeight,
@@ -198,6 +177,7 @@ export default class Graph extends Component {
       legendRowBreak,
       legendLabels,
       legendFontSize,
+      data,
       colors
     } = this.state;
     return (
@@ -209,6 +189,17 @@ export default class Graph extends Component {
             ${graphWidth + 2 * yLabelWidth}
             ${graphHeight + xLabelHeight + legendRows * legendRowHeight}`}
         >
+          <Lines
+            colors={colors}
+            data={data}
+            graphWidth={graphWidth}
+            graphHeight={graphHeight}
+            xAxisMin={xAxisMin}
+            xAxisMax={xAxisMax}
+            yAxisMin={yAxisMin}
+            yAxisMax={yAxisMax}
+          />
+
           <Legend
             labels={legendLabels}
             rows={legendRows}
@@ -217,8 +208,6 @@ export default class Graph extends Component {
             fontSize={legendFontSize}
             colors={colors}
           />
-
-          {this.makePaths()}
 
           <Axes
             xOrigin={xAxisMin < 0 ? this.getSvgX(0) : this.getSvgX(xAxisMin)}
