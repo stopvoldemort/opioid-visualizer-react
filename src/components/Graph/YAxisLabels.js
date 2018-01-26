@@ -10,7 +10,9 @@ export const YAxisLabels = ({
   yLabelIncrement,
   yAxisMin,
   yAxisMax,
-  yOrigin
+  yOrigin,
+  xOrigin,
+  yAxisLabelPlacement
 }) => {
   const numTicksAboveZero = Math.floor(Math.abs(yAxisMax) / yLabelIncrement);
   const numTicksBelowZero = Math.floor(Math.abs(yAxisMin) / yLabelIncrement);
@@ -24,6 +26,12 @@ export const YAxisLabels = ({
     return intervals;
   };
 
+  const location = () => {
+    if (yAxisLabelPlacement === "axis") return xOrigin;
+    else if (yAxisLabelPlacement === "edge") return 0;
+    else return xOrigin;
+  };
+
   const makeLabels = () => {
     const intervals = getIntervals();
     const labels = intervals.map(i => i * yLabelIncrement);
@@ -33,14 +41,14 @@ export const YAxisLabels = ({
         <g key={cuid()}>
           <line
             className="graph-axis"
-            x1={0}
+            x1={location()}
             y1={y}
-            x2={0 - yTickSize}
+            x2={location() - yTickSize}
             y2={y}
             stroke="#bdc3c7"
           />
           <text
-            x={0 - yTickSize - 5}
+            x={location() - yTickSize - 5}
             y={y + fontSize / 2}
             className="y-axis-label"
             fontSize={fontSize}

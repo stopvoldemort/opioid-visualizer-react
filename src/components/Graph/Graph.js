@@ -38,6 +38,7 @@ export default class Graph extends Component {
       yLabelIncrement: this.props.yLabelIncrement || 1,
       yAxisFontSize: this.props.yAxisFontSize || 10,
       yTickSize: this.props.yTickSize || 10,
+      yAxisLabelPlacement: this.props.yAxisLabelPlacement || "edge",
       // Not needed -- can be calculated from font and tick size
       yLabelWidth: this.props.yLabelWidth || 50,
 
@@ -47,6 +48,7 @@ export default class Graph extends Component {
       xLabelIncrement: this.props.xLabelIncrement || 1,
       xAxisFontSize: this.props.xAxisFontSize || 10,
       xTickSize: this.props.xTickSize || 10,
+      xAxisLabelPlacement: this.props.xAxisLabelPlacement || "edge",
       // Not needed -- can be calculated from font and tick size
       xLabelHeight: this.props.xLabelHeight || 25,
 
@@ -89,6 +91,7 @@ export default class Graph extends Component {
       xAxisMax: xAxisMax,
       xAxisMin: xAxisMin,
       yLabelIncrement: yLabelIncrement,
+      xLabelIncrement: xLabelIncrement,
       legendRows: legendRows,
       legendRowBreak: legendRowBreak,
       legendLabels: legendLabels
@@ -174,13 +177,15 @@ export default class Graph extends Component {
       yLabelWidth,
       yTickSize,
       yAxisFontSize,
+      yAxisLabelPlacement,
+      // Need to redo x labels similar to y labels,
       xAxisMax,
       xAxisMin,
-      // Need to redo x labels similar to y labels,
       xLabelIncrement,
       xLabelHeight,
       xTickSize,
       xAxisFontSize,
+      xAxisLabelPlacement,
       legendRows,
       legendRowHeight,
       legendRowBreak,
@@ -218,13 +223,17 @@ export default class Graph extends Component {
           />
 
           <XAxisLabels
+            xLabelIncrement={xLabelIncrement}
+            xAxisMin={xAxisMin}
+            xAxisMax={xAxisMax}
+            xOrigin={xAxisMin < 0 ? this.getSvgX(0) : this.getSvgX(xAxisMin)}
+            yOrigin={yAxisMin < 0 ? this.getSvgY(0) : this.getSvgY(yAxisMin)}
             xTickSize={xTickSize}
+            xAxisLabelPlacement={xAxisLabelPlacement}
             fontSize={xAxisFontSize}
             graphHeight={graphHeight}
             graphWidth={graphWidth}
-            yLabelWidth={yLabelWidth}
             xLabelHeight={xLabelHeight}
-            numTicks={18}
           />
 
           <YAxisLabels
@@ -234,6 +243,8 @@ export default class Graph extends Component {
             graphHeight={graphHeight}
             yLabelWidth={yLabelWidth}
             yOrigin={yAxisMin < 0 ? this.getSvgY(0) : this.getSvgY(yAxisMin)}
+            xOrigin={xAxisMin < 0 ? this.getSvgX(0) : this.getSvgX(xAxisMin)}
+            yAxisLabelPlacement={yAxisLabelPlacement}
             yAxisMin={yAxisMin}
             yAxisMax={yAxisMax}
           />

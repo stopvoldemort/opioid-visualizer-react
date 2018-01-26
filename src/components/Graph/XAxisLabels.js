@@ -2,35 +2,55 @@ import React from "react";
 import cuid from "cuid";
 
 export const XAxisLabels = ({
+  xLabelIncrement,
+  xAxisMax,
+  xAxisMin,
   xTickSize,
   fontSize,
-  years,
   graphHeight,
   graphWidth,
-  yLabelWidth,
   xLabelHeight,
-  numTicks
+  xOrigin,
+  yOrigin,
+  xAxisLabelPlacement
 }) => {
-  const xIncrement = graphWidth / (numTicks - 1);
+  const numTicksAboveZero = Math.floor(Math.abs(xAxisMax) / xLabelIncrement);
+  const numTicksBelowZero = Math.floor(Math.abs(xAxisMin) / xLabelIncrement);
+  const svgIncrement = graphWidth / ((xAxisMax - xAxisMin) / xLabelIncrement);
+
+  const getIntervals = () => {
+    let intervals = [];
+    for (let i = -numTicksBelowZero; i <= numTicksAboveZero; i++) {
+      intervals.push(i);
+    }
+    return intervals;
+  };
+
+  const location = () => {
+    if (xAxisLabelPlacement === "axis") return yOrigin;
+    else if (xAxisLabelPlacement === "edge") return graphHeight;
+    else return yOrigin;
+  };
 
   const makeLabels = () => {
-    const labels = [2000, 2004, 2008, 2012, 2016];
-    const intervals = [1, 5, 9, 13, 17];
+    const intervals = getIntervals();
+    const labels = intervals.map(i => i * xLabelIncrement);
+
     return intervals.map((interval, i) => {
-      const x = xIncrement * interval;
+      const x = xOrigin + svgIncrement * interval;
       return (
         <g key={cuid()}>
           <line
             className="graph-axis"
             x1={x}
-            y1={graphHeight}
+            y1={location()}
             x2={x}
-            y2={graphHeight + xTickSize}
+            y2={location() + xTickSize}
             stroke="#bdc3c7"
           />
           <text
             x={x}
-            y={graphHeight + xTickSize + fontSize + 5}
+            y={location() + xTickSize + fontSize + 5}
             className="x-axis-label"
             fontSize={fontSize}
           >
