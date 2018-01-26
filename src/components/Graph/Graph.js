@@ -54,7 +54,8 @@ export default class Graph extends Component {
       legendRows: this.props.legendRows || 1,
       legendRowHeight: this.props.legendRowHeight || 20,
       legendRowBreak: this.props.legendRowBreak || 4,
-      legendFontSize: this.props.legendFontSize || 10
+      legendFontSize: this.props.legendFontSize || 10,
+      legendLabels: []
     };
   }
 
@@ -78,16 +79,19 @@ export default class Graph extends Component {
     const xAxisMin =
       this.props.xAxisMin || this.calcAxisMin(xLabelIncrement, minDataX);
 
-    const rows = this.calcLegendRows();
-    const rowBreak = this.calcLegendRowBreak();
+    const legendRows = this.calcLegendRows();
+    const legendRowBreak = this.calcLegendRowBreak();
+    const legendLabels = DATA.inputs.map(input => input.name);
+
     this.setState({
       yAxisMax: yAxisMax,
       yAxisMin: yAxisMin,
       xAxisMax: xAxisMax,
       xAxisMin: xAxisMin,
       yLabelIncrement: yLabelIncrement,
-      legendRows: rows,
-      legendRowBreak: rowBreak
+      legendRows: legendRows,
+      legendRowBreak: legendRowBreak,
+      legendLabels: legendLabels
     });
   };
 
@@ -129,7 +133,6 @@ export default class Graph extends Component {
 
   getSvgX(x) {
     const { graphWidth, xAxisMin, xAxisMax } = this.state;
-    console.log(xAxisMax, xAxisMin);
     return graphWidth * (x - xAxisMin) / (xAxisMax - xAxisMin);
   }
 
@@ -181,6 +184,7 @@ export default class Graph extends Component {
       legendRows,
       legendRowHeight,
       legendRowBreak,
+      legendLabels,
       legendFontSize,
       colors
     } = this.state;
@@ -194,6 +198,7 @@ export default class Graph extends Component {
             ${graphHeight + xLabelHeight + legendRows * legendRowHeight}`}
         >
           <Legend
+            labels={legendLabels}
             rows={legendRows}
             rowHeight={legendRowHeight}
             rowBreak={legendRowBreak}
