@@ -3,7 +3,6 @@ import { Axes } from "./Axes.js";
 import { XAxisLabels } from "./XAxisLabels.js";
 import { YAxisLabels } from "./YAxisLabels.js";
 import { Legend } from "./Legend.js";
-import { DATA } from "../../assets/data.js";
 import { increments } from "../../assets/increments.js";
 import cuid from "cuid";
 import "../../style/Graph.css";
@@ -12,6 +11,16 @@ export default class Graph extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      data: this.props.data || {
+        xLabel: "no data",
+        yLabel: "no data",
+        inputs: [
+          {
+            name: "no data",
+            data: [{ x: -1, y: -1 }, { x: 1, y: 1 }]
+          }
+        ]
+      },
       // Line info: add dotted line, line breaks
       colors: this.props.colors || [
         "blue",
@@ -26,37 +35,29 @@ export default class Graph extends Component {
       graphHeight: this.props.graphHeight || 200,
       graphWidth: this.props.graphWidth || 400,
 
-      // Not sure these are needed
-      minDataX: this.props.minDataX || 1999,
-      maxDataX: this.props.maxDataX || 2016,
-      // minDataY: this.props.minDataY || -1,
-      // maxDataY: this.props.maxDataX || 1,
-
       // Y axis
-      yAxisMin: -1,
-      yAxisMax: 1,
+      yAxisMin: this.props.yAxisMin || -1,
+      yAxisMax: this.props.yAxisMax || 1,
       yLabelIncrement: this.props.yLabelIncrement || 1,
       yAxisFontSize: this.props.yAxisFontSize || 10,
       yTickSize: this.props.yTickSize || 10,
       yAxisLabelPlacement: this.props.yAxisLabelPlacement || "edge",
-      // Not needed -- can be calculated from font and tick size
-      yLabelWidth: this.props.yLabelWidth || 50,
+      yLabelWidth: 1,
 
-      // X axis: Need to add xAxisMax, xAxisMin
-      xAxisMin: -1,
-      xAxisMax: 1,
+      // X axis
+      xAxisMin: this.props.xAxisMin || -1,
+      xAxisMax: this.props.xAxisMax || 1,
       xLabelIncrement: this.props.xLabelIncrement || 1,
       xAxisFontSize: this.props.xAxisFontSize || 10,
       xTickSize: this.props.xTickSize || 10,
       xAxisLabelPlacement: this.props.xAxisLabelPlacement || "edge",
-      // Not needed -- can be calculated from font and tick size
-      xLabelHeight: this.props.xLabelHeight || 25,
+      xLabelHeight: 1,
 
       // Legend
-      legendRows: this.props.legendRows || 1,
-      legendRowHeight: this.props.legendRowHeight || 20,
-      legendRowBreak: this.props.legendRowBreak || 4,
       legendFontSize: this.props.legendFontSize || 10,
+      legendRows: 1,
+      legendRowBreak: 1,
+      legendRowHeight: 1,
       legendLabels: []
     };
   }
@@ -71,6 +72,8 @@ export default class Graph extends Component {
       this.props.yAxisMax || this.calcAxisMax(yLabelIncrement, maxDataY);
     const yAxisMin =
       this.props.yAxisMin || this.calcAxisMin(yLabelIncrement, minDataY);
+    const yLabelWidth =
+      (this.state.yAxisFontSize + this.state.yTickSize + 5) * 2;
 
     const minDataX = minMax.xMin;
     const maxDataX = minMax.xMax;
@@ -80,10 +83,12 @@ export default class Graph extends Component {
       this.props.xAxisMax || this.calcAxisMax(xLabelIncrement, maxDataX);
     const xAxisMin =
       this.props.xAxisMin || this.calcAxisMin(xLabelIncrement, minDataX);
+    const xLabelHeight = this.state.xAxisFontSize + this.state.xTickSize + 5;
 
     const legendRows = this.calcLegendRows();
     const legendRowBreak = this.calcLegendRowBreak();
-    const legendLabels = DATA.inputs.map(input => input.name);
+    const legendLabels = this.state.data.inputs.map(input => input.name);
+    const legendRowHeight = this.state.legendFontSize * 2;
 
     this.setState({
       yAxisMax: yAxisMax,
@@ -92,9 +97,12 @@ export default class Graph extends Component {
       xAxisMin: xAxisMin,
       yLabelIncrement: yLabelIncrement,
       xLabelIncrement: xLabelIncrement,
+      yLabelWidth: yLabelWidth,
+      xLabelHeight: xLabelHeight,
       legendRows: legendRows,
       legendRowBreak: legendRowBreak,
-      legendLabels: legendLabels
+      legendLabels: legendLabels,
+      legendRowHeight: legendRowHeight
     });
   };
 
@@ -115,7 +123,7 @@ export default class Graph extends Component {
 
   calcLegendRows = rows => {
     const rowBreak = this.calcLegendRowBreak();
-    return Math.floor(DATA.inputs.length / rowBreak) + 1;
+    return Math.floor(this.state.data.inputs.length / rowBreak) + 1;
   };
 
   getMinMax() {
@@ -123,7 +131,7 @@ export default class Graph extends Component {
     let xMax = 0;
     let yMin = 0;
     let yMax = 0;
-    DATA.inputs.forEach(input => {
+    this.state.data.inputs.forEach(input => {
       input.data.forEach(point => {
         xMin = Math.min(xMin, point.x);
         xMax = Math.max(xMax, point.x);
@@ -146,7 +154,7 @@ export default class Graph extends Component {
 
   makePaths() {
     const { colors } = this.state;
-    return DATA.inputs.map((input, i) => {
+    return this.state.data.inputs.map((input, i) => {
       return this.makePath(input.data, colors[i]);
     });
   }
@@ -178,7 +186,6 @@ export default class Graph extends Component {
       yTickSize,
       yAxisFontSize,
       yAxisLabelPlacement,
-      // Need to redo x labels similar to y labels,
       xAxisMax,
       xAxisMin,
       xLabelIncrement,
