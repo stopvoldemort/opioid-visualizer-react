@@ -73,6 +73,7 @@ export default class Graph extends Component {
 
     const minDataX = minMax.xMin;
     const maxDataX = minMax.xMax;
+    console.log(minDataX, maxDataX);
     const xLabelIncrement =
       this.props.xLabelIncrement || this.calcIncrements(minDataX, maxDataX);
     const xAxisMax =
@@ -133,7 +134,7 @@ export default class Graph extends Component {
   };
 
   getMinMax() {
-    let xMin = 0;
+    let xMin = this.props.xAxisMin || 0;
     let xMax = 0;
     let yMin = 0;
     let yMax = 0;

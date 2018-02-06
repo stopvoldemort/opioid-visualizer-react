@@ -3,9 +3,9 @@ export const DATA = {
   yLabel: "deaths",
   inputs: [
     {
-      name: "VT",
+      name: "fake data 1",
       data: [
-        { x: -500, y: 31 },
+        { x: 1999, y: 31 },
         { x: 2000, y: 37 },
         { x: 2001, y: 53 },
         { x: 2002, y: 54 },
@@ -26,7 +26,7 @@ export const DATA = {
       ]
     },
     {
-      name: "NH",
+      name: "fake data 2",
       data: [
         { x: 1999, y: 62 },
         { x: 2000, y: 49 },
@@ -49,7 +49,7 @@ export const DATA = {
       ]
     },
     {
-      name: "ME",
+      name: "fake data 3",
       data: [
         { x: 1999, y: 70 },
         { x: 2000, y: 62 },
@@ -72,7 +72,7 @@ export const DATA = {
       ]
     },
     {
-      name: "fake",
+      name: "fake data 4",
       data: [
         { x: 1999, y: 50 },
         { x: 2000, y: 60 },
@@ -95,9 +95,9 @@ export const DATA = {
       ]
     },
     {
-      name: "morefake",
+      name: "fake data 5",
       data: [
-        { x: 1999, y: -550 },
+        { x: 1999, y: 55 },
         { x: 2000, y: 65 },
         { x: 2001, y: 75 },
         { x: 2002, y: 85 },

@@ -13,7 +13,7 @@ export const Legend = ({
   const yAnchor = -(rows * rowHeight);
 
   const labelToPrint = str => {
-    if (str.length > 8) return `${str.slice(0, 3)}...`;
+    if (str.length > 12) return `${str.slice(0, 9)}...`;
     return str;
   };
 
